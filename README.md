@@ -1,2 +1,2 @@
 # 20203028XXX	Jabin Koo
-# Kookmin Univ. SW
+# Kookmin Univ. computer science
