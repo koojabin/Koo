@@ -7,7 +7,7 @@ def application(environ, start_response):
     b = c.get('b', [''])[0]
     x = 0
     y = 0
-    if '' not in [a, b]:
+    if a.isdigit() and b.isdigit():
         a, b = int(a), int(b)
         x = a + b
         y = a * b
