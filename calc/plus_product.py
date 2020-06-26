@@ -12,8 +12,8 @@ def application(environ, start_response):
         x = a + b
         y = a * b
     response_body = html % {
-        'x' : x or '',
-        'y' : y or '',
+        'x' : x or 0,
+        'y' : y or 0,
         }
     start_response('200 OK', [
         ('Content-Type', 'text/html'),
