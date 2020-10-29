@@ -4,45 +4,35 @@ from PyQt5.QtCore import *
 import pickle
 import datetime
 
-dbfilename = 'assignment3.dat'
+
 
 class Main(QWidget):
     def __init__(self):
         super().__init__()
+        self.dbfilename = 'assignment3.dat'
         self.initUI()
-        scoredb = self.readScoreDB()
-        self.doScoreDB(scoredb)
-        self.writeScoreDB(scoredb)
+        self.scoredb = []
+        self.doScoreDB()
+        self.writeScoreDB()
 
     def initUI(self):
         label1 = QLabel('Name: ', self)
-        label1.move(20,5)
         label2 = QLabel('Age: ', self)
-        label2.move(220, 5)
         label3 = QLabel('Score: ', self)
-        label3.move(420, 5)
         label4 = QLabel('Amount: ', self)
-        label4.move(235, 50)
         label5 = QLabel('Key: ', self)
-        label5.move(420, 50)
         label6 = QLabel('Result: ', self)
-        label6.move(20, 140)
 
 
-        Name = QLineEdit(self)
-        Name.move(60,5)
-        Age = QLineEdit(self)
-        Age.move(250, 5)
-        Score = QLineEdit(self)
-        Score.move(460, 5)
-        Amount = QLineEdit(self)
-        Amount.move(290, 50)
+        self.Name = QLineEdit()
+        self.Age = QLineEdit()
+        self.Score = QLineEdit()
+        self.Amount = QLineEdit()
 
-        cb = QComboBox(self)
-        cb.addItem('Name')
-        cb.addItem('Age')
-        cb.addItem('Score')
-        cb.move(460,50)
+        self.cb = QComboBox()
+        self.cb.addItem('Name')
+        self.cb.addItem('Age')
+        self.cb.addItem('Score')
 
 
         btn1 = QPushButton('Add')
@@ -51,51 +41,74 @@ class Main(QWidget):
         btn4 = QPushButton('Inc')
         btn5 = QPushButton('show')
 
-        te = QTextEdit()
-        te.setAcceptRichText(False)
-        te.resize(100,100)
-        te.move(300,160)
+        self.Result = QTextEdit()
 
-        hbox = QHBoxLayout()
-        hbox.addWidget(btn1)
-        hbox.addWidget(btn2)
-        hbox.addWidget(btn3)
-        hbox.addWidget(btn4)
-        hbox.addWidget(btn5)
-        vbox = QVBoxLayout()
-        vbox.addStretch(2)
-        vbox.addLayout(hbox)
-        vbox.addStretch(3)
+        line1 = QHBoxLayout()
+        line1.addStretch(1)
+        line1.addWidget(label1)
+        line1.addWidget(self.Name)
+        line1.addWidget(label2)
+        line1.addWidget(self.Age)
+        line1.addWidget(label3)
+        line1.addWidget(self.Score)
 
-        self.setLayout(vbox)
+        line2 = QHBoxLayout()
+        line2.addStretch(1)
+        line2.addWidget(label4)
+        line2.addWidget(self.Amount)
+        line2.addWidget(label5)
+        line2.addWidget(self.cb)
+
+        line3 = QHBoxLayout()
+        line3.addStretch(1)
+        line3.addWidget(btn1)
+        line3.addWidget(btn2)
+        line3.addWidget(btn3)
+        line3.addWidget(btn4)
+        line3.addWidget(btn5)
+
+        line4 = QHBoxLayout()
+        line4.addWidget(label6)
+
+        line5 = QHBoxLayout()
+        line5.addWidget(self.Result)
+
+        layout = QVBoxLayout()
+        layout.addLayout(line1)
+        layout.addLayout(line2)
+        layout.addLayout(line3)
+        layout.addStretch(1)
+        layout.addLayout(line4)
+        layout.addLayout(line5)
+
+        self.setLayout(layout)
+
         self.setWindowTitle('Assignment6')
-        self.setGeometry(100, 100, 600, 300)
+        self.setGeometry(100, 100, 500, 300)
         self.show()
 
     def readScoreDB(self):
         try:
-            fH = open(dbfilename, 'rb')
+            fH = open(self.dbfilename, 'rb')
         except FileNotFoundError as e:
-            print("New DB: ", dbfilename)
-            return []
+            self.scdb = []
+            return
 
-        scdb = []
         try:
-            scdb = pickle.load(fH)
+            self.scdb = pickle.load(fH)
         except:
-            print("Empty DB: ", dbfilename)
+            pass
         else:
-            print("Open DB: ", dbfilename)
+            pass
         fH.close()
-        return scdb
 
     # write the data into person db
-    def writeScoreDB(scdb):
-        fH = open(dbfilename, 'wb')
-        pickle.dump(scdb, fH)
+    def writeScoreDB(self):
+        fH = open(self.dbfilename, 'wb')
+        pickle.dump(self.scdb, fH)
         fH.close()
 
-    def doScoreDB(scdb, self):
+    def doScoreDB(self):
         while (True):
             try:
                 inputstr = (input("Score DB > "))
@@ -103,35 +116,35 @@ class Main(QWidget):
                 parse = inputstr.split(" ")
                 if self.btn1.setCheckable(True):
                     record = {'Name': parse[1], 'Age': int(parse[2]), 'Score': int(parse[3])}
-                    scdb += [record]
+                    self.scdb += [record]
                 elif self.btn2.setCheckable(True):
-                    for p in sorted(scdb, key=lambda person: person['Name']):
-                        for p in scdb:
+                    for p in sorted(self.scdb, key=lambda person: person['Name']):
+                        for p in self.scdb:
                             if p['Name'] == parse[1]:
-                                scdb.remove(p)
+                                self.scdb.remove(p)
                 elif self.btn5.setCheckable(True):
                     sortKey = 'Name' if len(parse) == 1 else parse[1]
-                    self.showScoreDB(scdb, sortKey)
+                    self.showScoreDB(self.scdb, sortKey)
                 elif self.btn3.setCheckable(True):
-                    for p in scdb:
+                    for p in self.scdb:
                         if p['Name'] == parse[1]:
                             for attr in sorted(p):
-                                print(attr + "=" + str(p[attr]), end=' ')
-                            print()
+                                self.Result.append(attr + "=" + str(p[attr]), end=' ')
+                            pass
                 elif self.btn4.setCheckable(True):
-                    for p in scdb:
+                    for p in self.scdb:
                         if p['Name'] == parse[1]:
                             p['Score'] += int(parse[2])
                 else:
-                    print("Invalid command: " + parse[0])
+                    self.Result.append("Invalid command: " + parse[0])
             except:
-                print('UnKnown Error')
+                self.Result.append('UnKnown Error')
 
-    def showScoreDB(scdb, keyname):
-        for p in sorted(scdb, key=lambda person: person[keyname]):
+    def showScoreDB(self, keyname):
+        for p in sorted(self.scdb, key=lambda person: person[keyname]):
             for attr in sorted(p):
-                print(attr + "=" + str(p[attr]), end=' ')
-            print()
+                self.Result.append(attr + "=" + str(p[attr]), end=' ')
+            pass
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
