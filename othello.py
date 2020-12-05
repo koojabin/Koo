@@ -9,6 +9,7 @@ from PyQt5.QtGui import QIcon, QPixmap
 import sys
 
 board = [[0 for i in range(8)] for j in range(8)]
+count = 1
 
 class othello(QWidget):
     def __init__(self):
@@ -125,6 +126,7 @@ class othello(QWidget):
         key = self.sender().text()
 
         if key == 'start':
+            turn(self)
             #시작할  흑백 돌 랜덤 배치
             x = randint(1,11)
             for i in range(3,5):
@@ -133,24 +135,80 @@ class othello(QWidget):
                         if (i == j):
                             self.BoardButton[i][j].setStyleSheet('background:black')
                             self.BoardButton[i][j].setEnabled(False)
-                            board[i][j] = 1
-                            GameScore(self)
+                            board[i][j] = 1 #검은색은 1
                         else:
                             self.BoardButton[i][j].setStyleSheet('background:white')
                             self.BoardButton[i][j].setEnabled(False)
-                            board[i][j] = 2
-                            GameScore(self)
+                            board[i][j] = 2 #흰색은 2
                     else:
                         if (i == j):
                             self.BoardButton[i][j].setStyleSheet('background:white')
                             self.BoardButton[i][j].setEnabled(False)
                             board[i][j] = 2
-                            GameScore(self)
                         else:
                             self.BoardButton[i][j].setStyleSheet('background:black')
                             self.BoardButton[i][j].setEnabled(False)
                             board[i][j] = 1
-                            GameScore(self)
+        GameScore(self)
+        ShowClicked(self)
+def ShowClicked(self):
+    if count%2 == 1: #플레이어턴
+        for i in range(0,8):
+            for j in range(0,8):
+                if board[i][j] == 2:
+                    if board[i-1][j] == 1 and board[i+1][j] == 0:
+                        board[i+1][j]=3
+                        self.BoardButton[i+1][j].setStyleSheet('background:yellow')
+                    if board[i+1][j] == 1 and board[i-1][j] == 0:
+                        board[i-1][j]=3
+                        self.BoardButton[i - 1][j].setStyleSheet('background:yellow')
+                    if board[i][j-1] == 1 and board[i][j+1] == 0:
+                        board[i][j+1]=3
+                        self.BoardButton[i][j+1].setStyleSheet('background:yellow')
+                    if board[i][j+1] == 1 and board[i][j-1] == 0:
+                        board[i][j-1]=3
+                        self.BoardButton[i][j-1].setStyleSheet('background:yellow')
+                    if board[i-1][j-1] == 1 and board[i+1][j+1] == 0:
+                        board[i+1][j+1]=3
+                        self.BoardButton[i + 1][j+1].setStyleSheet('background:yellow')
+                    if board[i-1][j+1] == 1 and board[i+1][j-1] == 0:
+                        board[i+1][j-1]=3
+                        self.BoardButton[i + 1][j-1].setStyleSheet('background:yellow')
+                    if board[i+1][j-1] == 1 and board[i-1][j+1] == 0:
+                        board[i-1][j+1]=3
+                        self.BoardButton[i-1][j+1].setStyleSheet('background:yellow')
+                    if board[i+1][j+1] == 1 and board[i-1][j-1] == 0:
+                        board[i-1][j-1]=3
+                        self.BoardButton[i-1][j-1].setStyleSheet('background:yellow')
+    elif count%2 == 0: #컴퓨터턴
+        for i in range(0,8):
+            for j in range(0,8):
+                if board[i][j] == 1:
+                    if board[i-1][j] == 2 and board[i+1][j] == 0:
+                        board[i+1][j]=3
+                        self.BoardButton[i+1][j].setStyleSheet('background:yellow')
+                    if board[i+1][j] == 2 and board[i-1][j] == 0:
+                        board[i-1][j]=3
+                        self.BoardButton[i - 1][j].setStyleSheet('background:yellow')
+                    if board[i][j-1] == 2 and board[i][j+1] == 0:
+                        board[i][j+1]=3
+                        self.BoardButton[i][j+1].setStyleSheet('background:yellow')
+                    if board[i][j+1] == 2 and board[i][j-1] == 0:
+                        board[i][j-1]=3
+                        self.BoardButton[i][j-1].setStyleSheet('background:yellow')
+                    if board[i-1][j-1] == 2 and board[i+1][j+1] == 0:
+                        board[i+1][j+1]=3
+                        self.BoardButton[i + 1][j+1].setStyleSheet('background:yellow')
+                    if board[i-1][j+1] == 2 and board[i+1][j-1] == 0:
+                        board[i+1][j-1]=3
+                        self.BoardButton[i + 1][j-1].setStyleSheet('background:yellow')
+                    if board[i+1][j-1] == 2 and board[i-1][j+1] == 0:
+                        board[i-1][j+1]=3
+                        self.BoardButton[i-1][j+1].setStyleSheet('background:yellow')
+                    if board[i+1][j+1] == 2 and board[i-1][j-1] == 0:
+                        board[i-1][j-1]=3
+                        self.BoardButton[i-1][j-1].setStyleSheet('background:yellow')
+
 
 def GameScore(self):
     playerScore = 0
@@ -164,9 +222,19 @@ def GameScore(self):
     self.PlayerScore.setText(str(playerScore))
     self.ComScore.setText(str(comScore))
 
-
-
-
+def turn(self):
+   if (count % 2 != 0):
+       self.PlayerLable.setStyleSheet("color : blue;"
+                                      "background-color: #87CEFA;"
+                                      "border-style: solid;"
+                                      "border-width: 3px;"
+                                      "border-color: #1E90FF")
+   else:
+       self.ComLable.setStyleSheet("color : blue;"
+                                      "background-color: #87CEFA;"
+                                      "border-style: solid;"
+                                      "border-width: 3px;"
+                                      "border-color: #1E90FF")
 
 if __name__ == '__main__':
 
