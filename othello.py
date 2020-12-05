@@ -1,9 +1,14 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout
+from random import randint
+
+from PyQt5 import QtCore
+from PyQt5.QtCore import QTimer, QTime
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLCDNumber
 from PyQt5.QtWidgets import QPushButton, QLabel, QTableWidget, QTableWidgetItem
 from PyQt5.QtWidgets import QLayout, QGridLayout, QLineEdit
 from PyQt5.QtGui import QIcon, QPixmap
 import sys
+
+board = [[0 for i in range(8)] for j in range(8)]
 
 class othello(QWidget):
     def __init__(self):
@@ -14,26 +19,35 @@ class othello(QWidget):
         self.setWindowTitle('othello')
         self.setWindowIcon(QIcon('othello_icon.png'))
 
-        StartButton = QPushButton('start', self)
+        #시작 버튼
+        self.StartButton = QPushButton('start')
+        self.StartButton.clicked.connect(self.buttonClicked)
+
+        #그리드 버튼
         self.BoardButton = [[0 for i in range(8)] for j in range(8)]
         for i in range(0,8):
             for j in range(0,8):
                 self.BoardButton[i][j] = QPushButton()
+                self.BoardButton[i][j].clicked.connect(self.buttonClicked)
 
-        PlayerLable = QLabel('Player: ', self)
-        TimerLabel = QLabel('Timer: ', self)
-        ComLable = QLabel('Com: ', self)
 
-        PlayerScore = QLineEdit(self)
-        TimerLine = QLineEdit(self)
-        ComScore = QLineEdit(self)
+        self.PlayerLable = QLabel('Player: ', )
+        self.TimerLabel = QLabel('Timer: ',)
+        self.ComLable = QLabel('Com: ',)
+
+        self.PlayerScore = QLineEdit()
+        self.PlayerScore.setReadOnly(True)
+        self.TimerLine = QLineEdit()
+        self.TimerLine.setReadOnly(True)
+        self.ComScore = QLineEdit()
+        self.ComScore.setReadOnly(True)
 
         OthelloBoard = QPixmap('othelloBoard.jpeg')
         OthelloBoard_img = QLabel()
         OthelloBoard_img.setPixmap(OthelloBoard)
 
-        StartBox = QHBoxLayout()
-        StartBox.addWidget(StartButton)
+        self.StartBox = QHBoxLayout()
+        self.StartBox.addWidget(self.StartButton)
 
         BoardBox1 = QHBoxLayout()
         for i in range(0,8):
@@ -64,15 +78,15 @@ class othello(QWidget):
         # BoardBox.addWidget(OthelloBoard_img)     #오델로판 이미지
 
         ScoreTimerBox = QHBoxLayout()
-        ScoreTimerBox.addWidget(PlayerLable)
-        ScoreTimerBox.addWidget(PlayerScore)
-        ScoreTimerBox.addWidget(TimerLabel)
-        ScoreTimerBox.addWidget(TimerLine)
-        ScoreTimerBox.addWidget(ComLable)
-        ScoreTimerBox.addWidget(ComScore)
+        ScoreTimerBox.addWidget(self.PlayerLable)
+        ScoreTimerBox.addWidget(self.PlayerScore)
+        ScoreTimerBox.addWidget(self.TimerLabel)
+        ScoreTimerBox.addWidget(self.TimerLine)
+        ScoreTimerBox.addWidget(self.ComLable)
+        ScoreTimerBox.addWidget(self.ComScore)
 
         ShowBox = QVBoxLayout()
-        ShowBox.addLayout(StartBox)
+        ShowBox.addLayout(self.StartBox)
         ShowBox.addLayout(BoardBox1)
         ShowBox.addLayout(BoardBox2)
         ShowBox.addLayout(BoardBox3)
@@ -85,6 +99,7 @@ class othello(QWidget):
 
         self.setGeometry(300, 300, 350, 300)
         self.setLayout(ShowBox)
+
 
         # self.tableWidget = QTableWidget(self)
         # self.tableWidget.resize(1000,1000)
@@ -103,6 +118,51 @@ class othello(QWidget):
         # grid.addWidget(QLineEdit(), 2, 3)
         # grid.addWidget(QLabel('Com: '), 2, 4)
         # grid.addWidget(QLineEdit(), 2, 5)
+
+
+
+    def buttonClicked(self):
+        key = self.sender().text()
+
+        if key == 'start':
+            #시작할  흑백 돌 랜덤 배치
+            x = randint(1,11)
+            for i in range(3,5):
+                for j in range(3,5):
+                    if (x%2 == 0):
+                        if (i == j):
+                            self.BoardButton[i][j].setStyleSheet('background:black')
+                            self.BoardButton[i][j].setEnabled(False)
+                            board[i][j] = 1
+                        else:
+                            self.BoardButton[i][j].setStyleSheet('background:white')
+                            self.BoardButton[i][j].setEnabled(False)
+                            board[i][j] = 2
+                    else:
+                        if (i == j):
+                            self.BoardButton[i][j].setStyleSheet('background:white')
+                            self.BoardButton[i][j].setEnabled(False)
+                            board[i][j] = 2
+                        else:
+                            self.BoardButton[i][j].setStyleSheet('background:black')
+                            self.BoardButton[i][j].setEnabled(False)
+                            board[i][j] = 1
+
+    def GameScore(self):
+        playerScore = 0
+        comScore = 0
+        for i in range(0,8):
+            for j in range(0,8):
+                if board[i][j] == 1:
+                    playerScore += 1
+                elif board[i][j] ==2:
+                    comScore += 1
+        self.PlayerScore.setText(str(playerScore))
+        self.ComScore.setText(str(comScore))
+
+
+
+
 
 if __name__ == '__main__':
 
