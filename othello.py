@@ -134,31 +134,35 @@ class othello(QWidget):
                             self.BoardButton[i][j].setStyleSheet('background:black')
                             self.BoardButton[i][j].setEnabled(False)
                             board[i][j] = 1
+                            GameScore(self)
                         else:
                             self.BoardButton[i][j].setStyleSheet('background:white')
                             self.BoardButton[i][j].setEnabled(False)
                             board[i][j] = 2
+                            GameScore(self)
                     else:
                         if (i == j):
                             self.BoardButton[i][j].setStyleSheet('background:white')
                             self.BoardButton[i][j].setEnabled(False)
                             board[i][j] = 2
+                            GameScore(self)
                         else:
                             self.BoardButton[i][j].setStyleSheet('background:black')
                             self.BoardButton[i][j].setEnabled(False)
                             board[i][j] = 1
+                            GameScore(self)
 
-    def GameScore(self):
-        playerScore = 0
-        comScore = 0
-        for i in range(0,8):
-            for j in range(0,8):
-                if board[i][j] == 1:
-                    playerScore += 1
-                elif board[i][j] ==2:
-                    comScore += 1
-        self.PlayerScore.setText(str(playerScore))
-        self.ComScore.setText(str(comScore))
+def GameScore(self):
+    playerScore = 0
+    comScore = 0
+    for i in range(0,8):
+        for j in range(0,8):
+            if board[i][j] == 1:
+                playerScore += 1
+            elif board[i][j] ==2:
+                comScore += 1
+    self.PlayerScore.setText(str(playerScore))
+    self.ComScore.setText(str(comScore))
 
 
 
