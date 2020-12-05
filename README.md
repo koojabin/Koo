@@ -1,3 +1,3 @@
 # 20203028XXX	Jabin Koo
 # Kookmin Univ. Computer Science
-add another line
+https://docs.google.com/document/d/1E1mGrIaW6gWoWtgFMhR0cZPv_-XqLaiygQvkkxcnMRI/edit?usp=sharing
