@@ -144,12 +144,97 @@ class othello(QWidget):
                 PlayerChangeButton(self, index_i, index_j)
                 board[index_i][index_j] = 1
                 self.BoardButton[index_i][index_j].setStyleSheet('background:black')
-        ComAI(self)
+                ComShowClicked(self)
+                ComAI(self)
         GameScore(self)
         PlayerShowClicked(self)
 
 def ComAI(self):
-    jjj=0
+    comcount = 0
+    for i in range(0, 8):
+        for j in range(0, 8):
+            if board[i][j] == 4:
+                comcount += 1
+    x = 2
+    for i in range(0, 8):
+        for j in range(0, 8):
+            if board[i][j] == 4:
+                x -= 1
+                if x == 0:
+                    ComChangeButton(self, i, j)
+                    board[i][j] = 2
+                    self.BoardButton[i][j].setStyleSheet('background:white')
+
+def ComChangeButton(self, i, j):
+    dir_x = 0
+    dir_y = 0
+    if board[i-1][j] == 1:
+        dir_x -= 1
+        while board[i+dir_x][j+dir_y] == 1:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:white')
+            board[i+dir_x][j+dir_y] = 2
+            dir_x -= 1
+        dir_x = 0
+    if board[i+1][j] == 1:
+        dir_x += 1
+        while board[i+dir_x][j+dir_y] == 1:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:white')
+            board[i + dir_x][j + dir_y] = 2
+            dir_x += 1
+        dir_x = 0
+    if board[i][j-1] == 1:
+        dir_y -= 1
+        while board[i+dir_x][j+dir_y] == 1:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:white')
+            board[i + dir_x][j + dir_y] = 2
+            dir_y -= 1
+        dir_y = 0
+    if board[i][j+1] == 1:
+        dir_y += 1
+        while board[i+dir_x][j+dir_y] == 1:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:white')
+            board[i + dir_x][j + dir_y] = 2
+            dir_y += 1
+        dir_y = 0
+    if board[i-1][j-1] == 1:
+        dir_x -= 1
+        dir_y -= 1
+        while board[i+dir_x][j+dir_y] == 1:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:white')
+            board[i + dir_x][j + dir_y] = 2
+            dir_x -= 1
+            dir_y -= 1
+        dir_x = 0
+        dir_y = 0
+    if board[i-1][j+1] == 1:
+        dir_x -= 1
+        dir_y += 1
+        while board[i+dir_x][j+dir_y] == 1:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:white')
+            board[i + dir_x][j + dir_y] = 2
+            dir_x -= 1
+            dir_y += 1
+        dir_x = 0
+        dir_y = 0
+    if board[i+1][j-1] == 1:
+        dir_x += 1
+        dir_y -= 1
+        while board[i+dir_x][j+dir_y] == 1:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:white')
+            board[i + dir_x][j + dir_y] = 2
+            dir_x += 1
+            dir_y -= 1
+        dir_x = 0
+        dir_y = 0
+    if board[i+1][j+1] == 1:
+        dir_x += 1
+        dir_y += 1
+        while board[i+dir_x][j+dir_y] == 1:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:white')
+            board[i + dir_x][j + dir_y] = 2
+            dir_x += 1
+            dir_y += 1
+
 def ComShowClicked(self):
     for i in range(0, 8):
         for j in range(0, 8):
@@ -157,22 +242,22 @@ def ComShowClicked(self):
                 board[i][j] = 0
     for i in range(0, 8):
         for j in range(0, 8):
-            if board[i][j] == 2:
-                if board[i - 1][j] == 1 and board[i + 1][j] == 0:
+            if board[i][j] == 1:
+                if board[i - 1][j] == 2 and board[i + 1][j] == 0:
                     board[i + 1][j] = 4
-                if board[i + 1][j] == 1 and board[i - 1][j] == 0:
+                if board[i + 1][j] == 2 and board[i - 1][j] == 0:
                     board[i - 1][j] = 4
-                if board[i][j - 1] == 1 and board[i][j + 1] == 0:
+                if board[i][j - 1] == 2 and board[i][j + 1] == 0:
                     board[i][j + 1] = 4
-                if board[i][j + 1] == 1 and board[i][j - 1] == 0:
+                if board[i][j + 1] == 2 and board[i][j - 1] == 0:
                     board[i][j - 1] = 4
-                if board[i - 1][j - 1] == 1 and board[i + 1][j + 1] == 0:
+                if board[i - 1][j - 1] == 2 and board[i + 1][j + 1] == 0:
                     board[i + 1][j + 1] = 4
-                if board[i - 1][j + 1] == 1 and board[i + 1][j - 1] == 0:
+                if board[i - 1][j + 1] == 2 and board[i + 1][j - 1] == 0:
                     board[i + 1][j - 1] = 4
-                if board[i + 1][j - 1] == 1 and board[i - 1][j + 1] == 0:
+                if board[i + 1][j - 1] == 2 and board[i - 1][j + 1] == 0:
                     board[i - 1][j + 1] = 4
-                if board[i + 1][j + 1] == 1 and board[i - 1][j - 1] == 0:
+                if board[i + 1][j + 1] == 2 and board[i - 1][j - 1] == 0:
                     board[i - 1][j - 1] = 4
 
 def PlayerChangeButton(self, i, j): #버튼의 색깔을 바꾸어준
@@ -244,6 +329,7 @@ def PlayerChangeButton(self, i, j): #버튼의 색깔을 바꾸어준
             board[i + dir_x][j + dir_y] = 1
             dir_x += 1
             dir_y += 1
+
 def GameStart(self): #시작할  흑백 돌 랜덤 배치
     x = randint(1, 11)
     for i in range(3, 5):
@@ -300,7 +386,6 @@ def PlayerShowClicked(self): #배치 가능한 곳을 보여줌
                     if board[i+1][j+1] == 1 and board[i-1][j-1] == 0:
                         board[i-1][j-1]=3
                         self.BoardButton[i-1][j-1].setStyleSheet('background:yellow')
-
 
 def GameScore(self):
     playerScore = 0
