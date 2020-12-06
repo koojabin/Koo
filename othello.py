@@ -5,7 +5,8 @@ from PyQt5.QtCore import QTimer, QTime
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLCDNumber
 from PyQt5.QtWidgets import QPushButton, QLabel, QTableWidget, QTableWidgetItem
 from PyQt5.QtWidgets import QLayout, QGridLayout, QLineEdit
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon, QPixmap, QFont
+import time
 import sys
 
 board = [[0 for i in range(8)] for j in range(8)]
@@ -29,6 +30,10 @@ class othello(QWidget):
         for i in range(0,8):
             for j in range(0,8):
                 self.BoardButton[i][j] = QPushButton()
+                self.BoardButton[i][j].setMaximumHeight(1000)
+                self.BoardButton[i][j].setText(str(i) + str(j))
+                self.BoardButton[i][j].setStyleSheet('QPushButton {color: white;}')
+                self.BoardButton[i][j].setFont(QFont('Arial', 1))
                 self.BoardButton[i][j].clicked.connect(self.buttonClicked)
 
 
@@ -98,7 +103,7 @@ class othello(QWidget):
         ShowBox.addLayout(BoardBox8)
         ShowBox.addLayout(ScoreTimerBox)
 
-        self.setGeometry(300, 300, 350, 300)
+        self.setGeometry(300, 300, 350, 700)
         self.setLayout(ShowBox)
 
 
@@ -124,34 +129,149 @@ class othello(QWidget):
 
     def buttonClicked(self):
         key = self.sender().text()
+        boardindex = -1
+        if key != 'start':
+            boardindex = int(key)
+            index_i = int(boardindex/10)
+            index_j = int(boardindex%10)
 
-        if key == 'start':
+        if key == 'start': #게임 스타
             turn(self)
-            #시작할  흑백 돌 랜덤 배치
-            x = randint(1,11)
-            for i in range(3,5):
-                for j in range(3,5):
-                    if (x%2 == 0):
-                        if (i == j):
-                            self.BoardButton[i][j].setStyleSheet('background:black')
-                            self.BoardButton[i][j].setEnabled(False)
-                            board[i][j] = 1 #검은색은 1
-                        else:
-                            self.BoardButton[i][j].setStyleSheet('background:white')
-                            self.BoardButton[i][j].setEnabled(False)
-                            board[i][j] = 2 #흰색은 2
-                    else:
-                        if (i == j):
-                            self.BoardButton[i][j].setStyleSheet('background:white')
-                            self.BoardButton[i][j].setEnabled(False)
-                            board[i][j] = 2
-                        else:
-                            self.BoardButton[i][j].setStyleSheet('background:black')
-                            self.BoardButton[i][j].setEnabled(False)
-                            board[i][j] = 1
+            self.StartButton.setEnabled(False)
+            GameStart(self)
+        if boardindex != -1:
+            if board[index_i][index_j] == 3:
+                PlayerChangeButton(self, index_i, index_j)
+                board[index_i][index_j] = 1
+                self.BoardButton[index_i][index_j].setStyleSheet('background:black')
+        ComAI(self)
         GameScore(self)
-        ShowClicked(self)
-def ShowClicked(self):
+        PlayerShowClicked(self)
+
+def ComAI(self):
+    jjj=0
+def ComShowClicked(self):
+    for i in range(0, 8):
+        for j in range(0, 8):
+            if board[i][j] == 4:
+                board[i][j] = 0
+    for i in range(0, 8):
+        for j in range(0, 8):
+            if board[i][j] == 2:
+                if board[i - 1][j] == 1 and board[i + 1][j] == 0:
+                    board[i + 1][j] = 4
+                if board[i + 1][j] == 1 and board[i - 1][j] == 0:
+                    board[i - 1][j] = 4
+                if board[i][j - 1] == 1 and board[i][j + 1] == 0:
+                    board[i][j + 1] = 4
+                if board[i][j + 1] == 1 and board[i][j - 1] == 0:
+                    board[i][j - 1] = 4
+                if board[i - 1][j - 1] == 1 and board[i + 1][j + 1] == 0:
+                    board[i + 1][j + 1] = 4
+                if board[i - 1][j + 1] == 1 and board[i + 1][j - 1] == 0:
+                    board[i + 1][j - 1] = 4
+                if board[i + 1][j - 1] == 1 and board[i - 1][j + 1] == 0:
+                    board[i - 1][j + 1] = 4
+                if board[i + 1][j + 1] == 1 and board[i - 1][j - 1] == 0:
+                    board[i - 1][j - 1] = 4
+
+def PlayerChangeButton(self, i, j): #버튼의 색깔을 바꾸어준
+    dir_x = 0
+    dir_y = 0
+    if board[i-1][j] == 2:
+        dir_x -= 1
+        while board[i+dir_x][j+dir_y] == 2:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:black')
+            board[i+dir_x][j+dir_y] = 1
+            dir_x -= 1
+        dir_x = 0
+    if board[i+1][j] == 2:
+        dir_x += 1
+        while board[i+dir_x][j+dir_y] == 2:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:black')
+            board[i + dir_x][j + dir_y] = 1
+            dir_x += 1
+        dir_x = 0
+    if board[i][j-1] == 2:
+        dir_y -= 1
+        while board[i+dir_x][j+dir_y] == 2:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:black')
+            board[i + dir_x][j + dir_y] = 1
+            dir_y -= 1
+        dir_y = 0
+    if board[i][j+1] == 2:
+        dir_y += 1
+        while board[i+dir_x][j+dir_y] == 2:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:black')
+            board[i + dir_x][j + dir_y] = 1
+            dir_y += 1
+        dir_y = 0
+    if board[i-1][j-1] == 2:
+        dir_x -= 1
+        dir_y -= 1
+        while board[i+dir_x][j+dir_y] == 2:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:black')
+            board[i + dir_x][j + dir_y] = 1
+            dir_x -= 1
+            dir_y -= 1
+        dir_x = 0
+        dir_y = 0
+    if board[i-1][j+1] == 2:
+        dir_x -= 1
+        dir_y += 1
+        while board[i+dir_x][j+dir_y] == 2:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:black')
+            board[i + dir_x][j + dir_y] = 1
+            dir_x -= 1
+            dir_y += 1
+        dir_x = 0
+        dir_y = 0
+    if board[i+1][j-1] == 2:
+        dir_x += 1
+        dir_y -= 1
+        while board[i+dir_x][j+dir_y] == 2:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:black')
+            board[i + dir_x][j + dir_y] = 1
+            dir_x += 1
+            dir_y -= 1
+        dir_x = 0
+        dir_y = 0
+    if board[i+1][j+1] == 2:
+        dir_x += 1
+        dir_y += 1
+        while board[i+dir_x][j+dir_y] == 2:
+            self.BoardButton[i+dir_x][j+dir_y].setStyleSheet('background:black')
+            board[i + dir_x][j + dir_y] = 1
+            dir_x += 1
+            dir_y += 1
+def GameStart(self): #시작할  흑백 돌 랜덤 배치
+    x = randint(1, 11)
+    for i in range(3, 5):
+        for j in range(3, 5):
+            if (x % 2 == 0):
+                if (i == j):
+                    self.BoardButton[i][j].setStyleSheet('background:black')
+                    self.BoardButton[i][j].setEnabled(False)
+                    board[i][j] = 1  # 검은색은 1
+                else:
+                    self.BoardButton[i][j].setStyleSheet('background:white')
+                    self.BoardButton[i][j].setEnabled(False)
+                    board[i][j] = 2  # 흰색은 2
+            else:
+                if (i == j):
+                    self.BoardButton[i][j].setStyleSheet('background:white')
+                    self.BoardButton[i][j].setEnabled(False)
+                    board[i][j] = 2
+                else:
+                    self.BoardButton[i][j].setStyleSheet('background:black')
+                    self.BoardButton[i][j].setEnabled(False)
+                    board[i][j] = 1
+def PlayerShowClicked(self): #배치 가능한 곳을 보여줌
+    for i in range(0, 8):
+        for j in range(0, 8):
+            if board[i][j] == 3:
+                board[i][j] = 0
+                self.BoardButton[i][j].setStyleSheet('background:None')
     if count%2 == 1: #플레이어턴
         for i in range(0,8):
             for j in range(0,8):
@@ -178,34 +298,6 @@ def ShowClicked(self):
                         board[i-1][j+1]=3
                         self.BoardButton[i-1][j+1].setStyleSheet('background:yellow')
                     if board[i+1][j+1] == 1 and board[i-1][j-1] == 0:
-                        board[i-1][j-1]=3
-                        self.BoardButton[i-1][j-1].setStyleSheet('background:yellow')
-    elif count%2 == 0: #컴퓨터턴
-        for i in range(0,8):
-            for j in range(0,8):
-                if board[i][j] == 1:
-                    if board[i-1][j] == 2 and board[i+1][j] == 0:
-                        board[i+1][j]=3
-                        self.BoardButton[i+1][j].setStyleSheet('background:yellow')
-                    if board[i+1][j] == 2 and board[i-1][j] == 0:
-                        board[i-1][j]=3
-                        self.BoardButton[i - 1][j].setStyleSheet('background:yellow')
-                    if board[i][j-1] == 2 and board[i][j+1] == 0:
-                        board[i][j+1]=3
-                        self.BoardButton[i][j+1].setStyleSheet('background:yellow')
-                    if board[i][j+1] == 2 and board[i][j-1] == 0:
-                        board[i][j-1]=3
-                        self.BoardButton[i][j-1].setStyleSheet('background:yellow')
-                    if board[i-1][j-1] == 2 and board[i+1][j+1] == 0:
-                        board[i+1][j+1]=3
-                        self.BoardButton[i + 1][j+1].setStyleSheet('background:yellow')
-                    if board[i-1][j+1] == 2 and board[i+1][j-1] == 0:
-                        board[i+1][j-1]=3
-                        self.BoardButton[i + 1][j-1].setStyleSheet('background:yellow')
-                    if board[i+1][j-1] == 2 and board[i-1][j+1] == 0:
-                        board[i-1][j+1]=3
-                        self.BoardButton[i-1][j+1].setStyleSheet('background:yellow')
-                    if board[i+1][j+1] == 2 and board[i-1][j-1] == 0:
                         board[i-1][j-1]=3
                         self.BoardButton[i-1][j-1].setStyleSheet('background:yellow')
 
