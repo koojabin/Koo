@@ -3,7 +3,7 @@ from random import randint
 from PyQt5 import QtCore
 from PyQt5.QtCore import QTimer, QTime
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLCDNumber
-from PyQt5.QtWidgets import QPushButton, QLabel, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QPushButton, QLabel, QTableWidget, QTableWidgetItem, QMessageBox
 from PyQt5.QtWidgets import QLayout, QGridLayout, QLineEdit
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 import time
@@ -111,7 +111,7 @@ class othello(QWidget):
         self.setGeometry(300, 300, 350, 700)
         self.setLayout(ShowBox)
 
-
+        ti = QTimer(self)
         # self.tableWidget = QTableWidget(self)
         # self.tableWidget.resize(1000,1000)
         # self.tableWidget.setRowCount(8)
@@ -139,35 +139,47 @@ class othello(QWidget):
             boardindex = int(key)
             index_i = int(boardindex/10)
             index_j = int(boardindex%10)
-            print(board[index_i][index_j])
         if key == 'start': #게임 스타
             turn(self)
             self.StartButton.setEnabled(False)
             GameStart(self)
 
         if boardindex != -1:
-
             if board[index_i][index_j] == 3:
                 board[index_i][index_j] = 1
                 self.BoardButton[index_i][index_j].setStyleSheet('background:black')
                 PlayerChangeButton(self, index_i, index_j)
                 PlayerClear(self)
-                ComShowClicked(self)
-                ComAI(self)
-                PlayerShowClicked(self)
-                while True:
-                    a = 0
-                    for i in range(1,9):
-                        for j in range(1,9):
-                            if board[i][j] == 3:
-                                a = 1
-                    if a == 1:
-                        break
-                    elif a == 0:
-                        ComShowClicked(self)
-                        ComAI(self)
+                if GameEndMission(self) == 1:
+                    GameEnd(self)
+                else:
+                    ComShowClicked(self)
+                    for i in range(1, 9):
+                        for j in range(1, 9):
+                            if board[i][j] == 4:
+                                ComAI(self)
+                                break
+                        if board[i][j] == 4:
+                            break
+                    if GameEndMission(self) == 1:
+                        GameEnd(self)
+                    else:
+                        while True:
+                            PlayerShowClicked(self)
+                            a = 0
+                            for i in range(1, 9):
+                                for j in range(1, 9):
+                                    if board[i][j] == 3:
+                                        a = 1
+                            if a == 1:
+                                break
+                            elif a == 0:
+                                ComShowClicked(self)
+                                ComAI(self)
+                                ComClear(self)
+                                if GameEndMission(self) == 1:
+                                    GameEnd(self)
                         ComClear(self)
-                ComClear(self)
         GameScore(self)
         PlayerShowClicked(self)
 
@@ -208,7 +220,7 @@ def ComChangeButton(self, i, j):
         dir_x -= 1
         while board[i+dir_x][j+dir_y] == 1:
             dir_x -= 1
-        if board[i+dir_x][j+dir_y] == 2:
+        if board[i+dir_x][j+dir_y] == 2 and board[i+dir_x][j+dir_y] != -1:
             dir_x = -1
             while board[i + dir_x][j + dir_y] == 1:
                 self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:green')
@@ -219,7 +231,7 @@ def ComChangeButton(self, i, j):
         dir_x += 1
         while board[i+dir_x][j+dir_y] == 1:
             dir_x += 1
-        if board[i+dir_x][j+dir_y] == 2:
+        if board[i+dir_x][j+dir_y] == 2 and board[i+dir_x][j+dir_y] != -1:
             dir_x = 1
             while board[i + dir_x][j + dir_y] == 1:
                 self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:green')
@@ -230,7 +242,7 @@ def ComChangeButton(self, i, j):
         dir_y -= 1
         while board[i+dir_x][j+dir_y] == 1:
             dir_y -= 1
-        if board[i+dir_x][j+dir_y] == 2:
+        if board[i+dir_x][j+dir_y] == 2 and board[i+dir_x][j+dir_y] != -1:
             dir_y = -1
             while board[i + dir_x][j + dir_y] == 1:
                 self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:green')
@@ -241,7 +253,7 @@ def ComChangeButton(self, i, j):
         dir_y += 1
         while board[i+dir_x][j+dir_y] == 1:
             dir_y += 1
-        if board[i+dir_x][j+dir_y] == 2:
+        if board[i+dir_x][j+dir_y] == 2 and board[i+dir_x][j+dir_y] != -1:
             dir_y = 1
             while board[i + dir_x][j + dir_y] == 1:
                 self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:green')
@@ -254,7 +266,7 @@ def ComChangeButton(self, i, j):
         while board[i+dir_x][j+dir_y] == 1:
             dir_x -= 1
             dir_y -= 1
-        if board[i+dir_x][j+dir_y] == 2:
+        if board[i+dir_x][j+dir_y] == 2 and board[i+dir_x][j+dir_y] != -1:
             dir_x = -1
             dir_y = -1
             while board[i + dir_x][j + dir_y] == 1:
@@ -270,7 +282,7 @@ def ComChangeButton(self, i, j):
         while board[i+dir_x][j+dir_y] == 1:
             dir_x -= 1
             dir_y += 1
-        if board[i+dir_x][j+dir_y] == 2:
+        if board[i+dir_x][j+dir_y] == 2 and board[i+dir_x][j+dir_y] != -1:
             dir_x = -1
             dir_y = 1
             while board[i + dir_x][j + dir_y] == 1:
@@ -286,7 +298,7 @@ def ComChangeButton(self, i, j):
         while board[i+dir_x][j+dir_y] == 1:
             dir_x += 1
             dir_y -= 1
-        if board[i+dir_x][j+dir_y] == 2:
+        if board[i+dir_x][j+dir_y] == 2 and board[i+dir_x][j+dir_y] != -1:
             dir_x = 1
             dir_y = -1
             while board[i + dir_x][j + dir_y] == 1:
@@ -302,7 +314,7 @@ def ComChangeButton(self, i, j):
         while board[i+dir_x][j+dir_y] == 1:
             dir_x += 1
             dir_y += 1
-        if board[i+dir_x][j+dir_y] == 2:
+        if board[i+dir_x][j+dir_y] == 2 and board[i+dir_x][j+dir_y] != -1:
             dir_x = +1
             dir_y = +1
             while board[i + dir_x][j + dir_y] == 1:
@@ -327,28 +339,28 @@ def ComShowClicked(self):
                     dir_x -= 1
                     while board[i + dir_x][j + dir_y] == 1:
                         dir_x -= 1
-                    if board[i + dir_x][j + dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 4
                     dir_x = 0
                 if board[i + 1][j] == 1:
                     dir_x += 1
                     while board[i + dir_x][j + dir_y] == 1:
                         dir_x += 1
-                    if board[i + dir_x][j + dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 4
                     dir_x = 0
                 if board[i][j - 1] == 1:
                     dir_y -= 1
                     while board[i + dir_x][j + dir_y] == 1:
                         dir_y -= 1
-                    if board[i + dir_x][j + dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 4
                     dir_y = 0
                 if board[i][j + 1] == 1:
                     dir_y += 1
                     while board[i + dir_x][j + dir_y] == 1:
                         dir_y += 1
-                    if board[i + dir_x][j + dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 4
                     dir_y = 0
                 if board[i - 1][j - 1] == 1:
@@ -357,7 +369,7 @@ def ComShowClicked(self):
                     while board[i + dir_x][j + dir_y] == 1:
                         dir_x -= 1
                         dir_y -= 1
-                    if board[i + dir_x][j + dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 4
                     dir_x = 0
                     dir_y = 0
@@ -367,7 +379,7 @@ def ComShowClicked(self):
                     while board[i + dir_x][j + dir_y] == 1:
                         dir_x -= 1
                         dir_y += 1
-                    if board[i + dir_x][j + dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 4
                     dir_x = 0
                     dir_y = 0
@@ -377,7 +389,7 @@ def ComShowClicked(self):
                     while board[i + dir_x][j + dir_y] == 1:
                         dir_x += 1
                         dir_y -= 1
-                    if board[i + dir_x][j + dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 4
                     dir_x = 0
                     dir_y = 0
@@ -387,7 +399,7 @@ def ComShowClicked(self):
                     while board[i + dir_x][j + dir_y] == 1:
                         dir_x += 1
                         dir_y += 1
-                    if board[i + dir_x][j + dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 4
                     dir_x = 0
                     dir_y = 0
@@ -399,7 +411,7 @@ def PlayerChangeButton(self, i, j): #버튼의 색깔을 바꾸어준
         dir_x -= 1
         while board[i+dir_x][j+dir_y] == 2:
             dir_x -= 1
-        if board[i+dir_x][j+dir_y] == 1:
+        if board[i+dir_x][j+dir_y] == 1 and board[i+dir_x][j+dir_y] != -1:
             dir_x = -1
             while board[i + dir_x][j + dir_y] == 2:
                 self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:black')
@@ -410,7 +422,7 @@ def PlayerChangeButton(self, i, j): #버튼의 색깔을 바꾸어준
         dir_x += 1
         while board[i+dir_x][j+dir_y] == 2:
             dir_x += 1
-        if board[i+dir_x][j+dir_y] == 1:
+        if board[i+dir_x][j+dir_y] == 1 and board[i+dir_x][j+dir_y] != -1:
             dir_x = 1
             while board[i + dir_x][j + dir_y] == 2:
                 self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:black')
@@ -421,7 +433,7 @@ def PlayerChangeButton(self, i, j): #버튼의 색깔을 바꾸어준
         dir_y -= 1
         while board[i+dir_x][j+dir_y] == 2:
             dir_y -= 1
-        if board[i+dir_x][j+dir_y] == 1:
+        if board[i+dir_x][j+dir_y] == 1 and board[i+dir_x][j+dir_y] != -1:
             dir_y = -1
             while board[i + dir_x][j + dir_y] == 2:
                 self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:black')
@@ -432,7 +444,7 @@ def PlayerChangeButton(self, i, j): #버튼의 색깔을 바꾸어준
         dir_y += 1
         while board[i+dir_x][j+dir_y] == 2:
             dir_y += 1
-        if board[i+dir_x][j+dir_y] == 1:
+        if board[i+dir_x][j+dir_y] == 1 and board[i+dir_x][j+dir_y] != -1:
             dir_y = 1
             while board[i + dir_x][j + dir_y] == 2:
                 self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:black')
@@ -445,7 +457,7 @@ def PlayerChangeButton(self, i, j): #버튼의 색깔을 바꾸어준
         while board[i+dir_x][j+dir_y] == 2:
             dir_x -= 1
             dir_y -= 1
-        if board[i+dir_x][j+dir_y] == 1:
+        if board[i+dir_x][j+dir_y] == 1 and board[i+dir_x][j+dir_y] != -1:
             dir_x = -1
             dir_y = -1
             while board[i + dir_x][j + dir_y] == 2:
@@ -461,7 +473,7 @@ def PlayerChangeButton(self, i, j): #버튼의 색깔을 바꾸어준
         while board[i+dir_x][j+dir_y] == 2:
             dir_x -= 1
             dir_y += 1
-        if board[i+dir_x][j+dir_y] == 1:
+        if board[i+dir_x][j+dir_y] == 1 and board[i+dir_x][j+dir_y] != -1:
             dir_x = -1
             dir_y = 1
             while board[i + dir_x][j + dir_y] == 2:
@@ -477,7 +489,7 @@ def PlayerChangeButton(self, i, j): #버튼의 색깔을 바꾸어준
         while board[i+dir_x][j+dir_y] == 2:
             dir_x += 1
             dir_y -= 1
-        if board[i+dir_x][j+dir_y] == 1:
+        if board[i+dir_x][j+dir_y] == 1 and board[i+dir_x][j+dir_y] != -1:
             dir_x = 1
             dir_y = -1
             while board[i + dir_x][j + dir_y] == 2:
@@ -493,7 +505,7 @@ def PlayerChangeButton(self, i, j): #버튼의 색깔을 바꾸어준
         while board[i+dir_x][j+dir_y] == 2:
             dir_x += 1
             dir_y += 1
-        if board[i+dir_x][j+dir_y] == 1:
+        if board[i+dir_x][j+dir_y] == 1 and board[i+dir_x][j+dir_y] != -1:
             dir_x = +1
             dir_y = +1
             while board[i + dir_x][j + dir_y] == 2:
@@ -542,7 +554,7 @@ def PlayerShowClicked(self): #배치 가능한 곳을 보여줌
                     dir_x = -1
                     while board[i + dir_x][j + dir_y] == 2:
                         dir_x -= 1
-                    if board[i+dir_x][j+dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 3
                         self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:yellow')
                     dir_x = 0
@@ -550,7 +562,7 @@ def PlayerShowClicked(self): #배치 가능한 곳을 보여줌
                     dir_x += 1
                     while board[i + dir_x][j + dir_y] == 2:
                         dir_x += 1
-                    if board[i + dir_x][j + dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 3
                         self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:yellow')
                     dir_x = 0
@@ -558,7 +570,7 @@ def PlayerShowClicked(self): #배치 가능한 곳을 보여줌
                     dir_y -= 1
                     while board[i + dir_x][j + dir_y] == 2:
                         dir_y -= 1
-                    if board[i + dir_x][j + dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 3
                         self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:yellow')
                     dir_y = 0
@@ -566,7 +578,7 @@ def PlayerShowClicked(self): #배치 가능한 곳을 보여줌
                     dir_y += 1
                     while board[i + dir_x][j + dir_y] == 2:
                         dir_y += 1
-                    if board[i + dir_x][j + dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 3
                         self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:yellow')
                     dir_y = 0
@@ -576,7 +588,7 @@ def PlayerShowClicked(self): #배치 가능한 곳을 보여줌
                     while board[i + dir_x][j + dir_y] == 2:
                         dir_x -= 1
                         dir_y -= 1
-                    if board[i + dir_x][j + dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 3
                         self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:yellow')
                     dir_x = 0
@@ -587,7 +599,7 @@ def PlayerShowClicked(self): #배치 가능한 곳을 보여줌
                     while board[i + dir_x][j + dir_y] == 2:
                         dir_x -= 1
                         dir_y += 1
-                    if board[i + dir_x][j + dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 3
                         self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:yellow')
                     dir_x = 0
@@ -598,7 +610,7 @@ def PlayerShowClicked(self): #배치 가능한 곳을 보여줌
                     while board[i + dir_x][j + dir_y] == 2:
                         dir_x += 1
                         dir_y -= 1
-                    if board[i + dir_x][j + dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 3
                         self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:yellow')
                     dir_x = 0
@@ -609,7 +621,7 @@ def PlayerShowClicked(self): #배치 가능한 곳을 보여줌
                     while board[i + dir_x][j + dir_y] == 2:
                         dir_x += 1
                         dir_y += 1
-                    if board[i + dir_x][j + dir_y] == 0:
+                    if board[i+dir_x][j+dir_y] == 0 and board[i+dir_x][j+dir_y] != -1:
                         board[i+dir_x][j+dir_y] = 3
                         self.BoardButton[i + dir_x][j + dir_y].setStyleSheet('background:yellow')
                     dir_x = 0
@@ -641,6 +653,44 @@ def turn(self):
                                       "border-width: 3px;"
                                       "border-color: #1E90FF")
 
+def GameEnd(self):
+   EndBox = QMessageBox()
+   EndBox.setWindowTitle("Game End!")
+   if self.PlayerScore.text() > self.ComScore.text():
+       EndBox.setText("You Win!")
+       EndBox.setInformativeText("One More?")
+   elif self.ComScore.text() > self.PlayerScore.text():
+       EndBox.setText("You Lose!")
+       EndBox.setInformativeText("One More?")
+   else:
+       EndBox.setText("Draw!")
+       EndBox.setInformativeText("One More?")
+   EndBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+   EndBox.setDefaultButton(QMessageBox.Yes)
+
+   retval = EndBox.exec_()
+
+   if retval == QMessageBox.Yes:
+       self.StartButton.setEnabled(True)
+       GameStart(self)
+       for i in range(1, 9):
+           for j in range(1, 9):
+               board[i][j] = 0
+               self.BoardButton[i][j].setStyleSheet('background:None')
+
+   else:
+       sys.exit()
+
+def GameEndMission(self):
+    end = 0
+    for i in range(1, 9):
+        for j in range(1, 9):
+            if board[i][j] == 0:
+                end = 1
+    if end == 0:
+        return 1
+    else:
+        return 0
 
 if __name__ == '__main__':
 
