@@ -199,15 +199,16 @@ def ComAI(self):
         for j in range(1, 9):
             if board[i][j] == 4:
                 comcount += 1
-    x = randint(0,comcount)
+    x = randint(1,comcount)
     for i in range(1, 9):
         for j in range(1, 9):
             if board[i][j] == 4:
+                x -= 1
                 if x == 0:
                     board[i][j] = 2
                     self.BoardButton[i][j].setStyleSheet('background:green')
                     ComChangeButton(self, i, j)
-                x -= 1
+
 
 def ComChangeButton(self, i, j):
     print('bbb')
@@ -672,6 +673,7 @@ def GameEnd(self):
 
    if retval == QMessageBox.Yes:
        self.StartButton.setEnabled(True)
+       GameStart(self)
        for i in range(1, 9):
            for j in range(1, 9):
                board[i][j] = 0
@@ -687,7 +689,7 @@ def GameEndMission(self):
             if board[i][j] == 0:
                 end = 1
     if end == 0:
-        GameEnd(self)
+        return GameEnd(self)
 
 if __name__ == '__main__':
 
