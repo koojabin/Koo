@@ -1,5 +1,7 @@
-from random import randint
+#board리스트 -1: 바둑판 밖 0: 아무것도 놓여있지 않은 상태 1: 플레이어의 바둑알이 놓여져있는 상태 2: 컴퓨터의 바둑알이 놓여져있는 상태 
+#           3: 플레이어가 바둑알을 놓을 수 있는 곳 4: 컴퓨터가 바둑알을 놓을수 있는 곳
 
+from random import randint
 from PyQt5 import QtCore
 from PyQt5.QtCore import QTimer, QTime
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLCDNumber
@@ -9,9 +11,9 @@ from PyQt5.QtGui import QIcon, QPixmap, QFont
 import time
 import sys
 
-board = [[0 for i in range(10)] for j in range(10)]
+board = [[0 for i in range(10)] for j in range(10)] #바둑알이 8*8판을 나가서 인덱스에러 방지를 위하여 10*10으로 만들고 0으로 초기화 해줌
 count = 1
-for i in range(0,10):
+for i in range(0,10): #둘레에 -1값을 넣어줌으로써 board의 값이 -1이면 나가지 못하게 함으로써 오류
     board[0][i] = -1
     board[i][0] = -1
     board[9][i] = -1
@@ -132,35 +134,35 @@ class othello(QWidget):
 
 
 
-    def buttonClicked(self):
+    def buttonClicked(self): #버튼이 클릭되면 발생
         key = self.sender().text()
-        boardindex = -1
-        if key != 'start':
+        boardindex = -1 #BoardButton을 누르면 값을 바꿔줌으로써 눌렸을 때만 실행되게 해주기 위한 변수 
+        if key != 'start':  #BoardButton이 눌렸을 때 실행
             boardindex = int(key)
-            index_i = int(boardindex/10)
+            index_i = int(boardindex/10) #BoardButton의 행과 열의 인덱스를 저장
             index_j = int(boardindex%10)
-        if key == 'start': #게임 스타
-            turn(self)
-            self.StartButton.setEnabled(False)
+        if key == 'start':  #스타트버튼을 누르면 실행
+            turn(self)  #자기 턴임을 보여줌
+            self.StartButton.setEnabled(False)  #스타트버튼을 비활성화함으로써 다시 클릭이 안되게 만듬
             GameStart(self)
 
-        if boardindex != -1:
-            if board[index_i][index_j] == 3:
+        if boardindex != -1: #BoardButton이 눌렸을 때 실행
+            if board[index_i][index_j] == 3:    #플레이어가 둘 수 있는 곳이 있는지 확인
                 board[index_i][index_j] = 1
                 self.BoardButton[index_i][index_j].setStyleSheet('background:black')
                 PlayerChangeButton(self, index_i, index_j)
                 PlayerClear(self)
-                GameEndMission(self)
+                GameEndMission(self) #플레이어가 바둑알을 두고 게임이 끝났는지 확인
                 ComShowClicked(self)
-                for i in range(1, 9):
+                for i in range(1, 9):   
                     for j in range(1, 9):
-                        if board[i][j] == 4:
+                        if board[i][j] == 4:    #컴퓨터가 둘 수 있는 곳이 확인
                             ComAI(self)
                             break
                     if board[i][j] == 4:
                         break
-                GameEndMission(self)
-                while True:
+                GameEndMission(self)    #컴퓨터가 바둑알을 두고 게임이 끝났는지 확인
+                while True: #플레이어가 둘 곳이 없을 때 컴퓨터에게 턴이 다시 돌아가 컴퓨터가 다시 두게 함
                     PlayerShowClicked(self)
                     a = 0
                     for i in range(1,9):
@@ -178,14 +180,14 @@ class othello(QWidget):
         GameScore(self)
         PlayerShowClicked(self)
 
-def PlayerClear(self):
+def PlayerClear(self):  #플레이어의 턴이 끝나고 플레이어가 둘 수 있던 곳의 값들을 초기화
     for i in range(1, 9):
         for j in range(1, 9):
             if board[i][j] == 3:
                 board[i][j] = 0
                 self.BoardButton[i][j].setStyleSheet('background:None')
 
-def ComClear(self):
+def ComClear(self): #컴퓨터의 턴이 끝나고 플레이어가 둘 수 있던 곳의 값들을 초기화
     for i in range(1, 9):
         for j in range(1, 9):
             if board[i][j] == 4:
@@ -195,11 +197,11 @@ def ComClear(self):
 def ComAI(self):
     print('aaa')
     comcount = 0
-    for i in range(1, 9):
+    for i in range(1, 9):   #컴퓨터가 둘 수 있는 곳의 수를 count함
         for j in range(1, 9):
             if board[i][j] == 4:
                 comcount += 1
-    x = randint(1,comcount)
+    x = randint(1,comcount) #컴퓨터가 둘 곳을 랜덤으로 뽑음
     for i in range(1, 9):
         for j in range(1, 9):
             if board[i][j] == 4:
@@ -210,8 +212,8 @@ def ComAI(self):
                     ComChangeButton(self, i, j)
 
 
-def ComChangeButton(self, i, j):
-    print('bbb')
+def ComChangeButton(self, i, j):    #자신이 바둑알을 둔 곳의 상하좌우, 대각선을 검사해주고 있다면 그 방향으로 dir을 저장해주고 상대편의 돌이 나오지 않을 때까지 그 방향으로 계속 진행
+    print('bbb')                    #자기의 색깔이 나온다면 지금까지 왔던 길의 알을 자기의 색깔로 바꾸어줌. 그리고 다음 if문을 위해 dir값 초기화
     dir_x = 0
     dir_y = 0
     if board[i-1][j] == 1:
@@ -323,15 +325,15 @@ def ComChangeButton(self, i, j):
             dir_x = 0
             dir_y = 0
 
-def ComShowClicked(self):
+def ComShowClicked(self):   #자신이 둘 수있는 곳을 보여줌
     print('ccc')
-    for i in range(1, 9):
+    for i in range(1, 9):   #자신이 전에 저장해준 값을 초기화 해줌
         for j in range(1, 9):
             if board[i][j] == 4:
                 board[i][j] = 0
     dir_x = 0
     dir_y = 0
-    for i in range(1, 9):
+    for i in range(1, 9):   #ChangeButton함수와 비슷함. 하지만 ShowClicked함수는 끝에 board의 값이 0이여야지 둘 수 있는 곳이기 때문에 조건의 값이 0임
         for j in range(1, 9):
             if board[i][j] == 2:
                 if board[i - 1][j] == 1:
@@ -403,7 +405,7 @@ def ComShowClicked(self):
                     dir_x = 0
                     dir_y = 0
 
-def PlayerChangeButton(self, i, j): #버튼의 색깔을 바꾸어준
+def PlayerChangeButton(self, i, j): #위에 함수와 값만 다르고 기능은 같음
     print('ddd')
     dir_x = 0
     dir_y = 0
@@ -516,7 +518,7 @@ def PlayerChangeButton(self, i, j): #버튼의 색깔을 바꾸어준
         dir_x = 0
         dir_y = 0
 
-def GameStart(self): #시작할  흑백 돌 랜덤 배치
+def GameStart(self): #시작할 가운데 부분의 흑백 돌을 대각선 방향으로 랜덤 배치
     x = randint(1, 11)
     for i in range(4, 6):
         for j in range(4, 6):
@@ -539,7 +541,7 @@ def GameStart(self): #시작할  흑백 돌 랜덤 배치
                     self.BoardButton[i][j].setEnabled(False)
                     board[i][j] = 1
 
-def PlayerShowClicked(self): #배치 가능한 곳을 보여줌
+def PlayerShowClicked(self): #위에 함수와 값만 다르고 기능은 같음
     print('eee')
     for i in range(1, 9):
         for j in range(1, 9):
@@ -628,7 +630,7 @@ def PlayerShowClicked(self): #배치 가능한 곳을 보여줌
                     dir_x = 0
                     dir_y = 0
 
-def GameScore(self):
+def GameScore(self):    #board의 인덱스를 다 검사해주며 플레이어와 컴퓨터의 score를 보여줌
     playerScore = 0
     comScore = 0
     for i in range(1,9):
@@ -640,7 +642,7 @@ def GameScore(self):
     self.PlayerScore.setText(str(playerScore))
     self.ComScore.setText(str(comScore))
 
-def turn(self):
+def turn(self): #자신의 턴일때 색깔을 나타냄
    if (count % 2 != 0):
        self.PlayerLable.setStyleSheet("color : blue;"
                                       "background-color: #87CEFA;"
@@ -654,7 +656,7 @@ def turn(self):
                                       "border-width: 3px;"
                                       "border-color: #1E90FF")
 
-def GameEnd(self):
+def GameEnd(self): #게임이 종료될 때 누가 승리하였는지 보여주고 다시 할것인지 종료할지 정함
    EndBox = QMessageBox()
    EndBox.setWindowTitle("Game End!")
    if self.PlayerScore.text() > self.ComScore.text():
@@ -671,7 +673,7 @@ def GameEnd(self):
 
    retval = EndBox.exec_()
 
-   if retval == QMessageBox.Yes:
+   if retval == QMessageBox.Yes: #종료한다면 초기화를 해줌 <<이건 아직 미완성임
        self.StartButton.setEnabled(True)
        GameStart(self)
        for i in range(1, 9):
@@ -682,7 +684,7 @@ def GameEnd(self):
    else:
        sys.exit()
 
-def GameEndMission(self):
+def GameEndMission(self): #게임이 끝났는지 더 할 수 있는지 검사
     end = 0
     for i in range(1, 9):
         for j in range(1, 9):
