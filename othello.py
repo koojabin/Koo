@@ -20,6 +20,8 @@ for i in range(0,10):
 class othello(QWidget):
     def __init__(self):
         super().__init__()
+        self.oldtime = 0
+        self.nowtime = time.time()
         self.initUI()
 
     def initUI(self):
@@ -110,8 +112,7 @@ class othello(QWidget):
 
         self.setGeometry(300, 300, 350, 700)
         self.setLayout(ShowBox)
-
-        ti = QTimer(self)
+        self.ChangeTime = QTimer(self)
         # self.tableWidget = QTableWidget(self)
         # self.tableWidget.resize(1000,1000)
         # self.tableWidget.setRowCount(8)
@@ -182,6 +183,14 @@ class othello(QWidget):
                         ComClear(self)
         GameScore(self)
         PlayerShowClicked(self)
+def TimeDelay(self):
+    self.oldtime = 0
+    if self.oldtime == 0:
+        self.oldtime = time.time()
+    while True:
+        self.nowtime = time.time()
+        if self.nowtime - self.oldtime >= 2:
+            break
 
 def PlayerClear(self):
     for i in range(1, 9):
